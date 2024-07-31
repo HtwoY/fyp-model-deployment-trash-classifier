@@ -7,7 +7,7 @@ import tensorflow as tf
 # Load the trained model
 @st.cache(allow_output_mutation=True)
 def load_trained_model():
-    model = load_model('tuned_efficientnetb5_model.keras')
+    model = load_model('resnet50_model.keras')
     return model
 
 model = load_trained_model()
