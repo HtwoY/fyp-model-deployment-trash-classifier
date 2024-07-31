@@ -1,7 +1,9 @@
 import streamlit as st
 import numpy as np
+import tensorflow as tf
 from PIL import Image
 from tensorflow.keras.models import load_model
+import matplotlib.pyplot as plt
 
 # Load the trained model
 @st.cache(allow_output_mutation=True)
@@ -49,8 +51,17 @@ if uploaded_file is not None:
     # Debug: Print raw predictions
     st.write(f'Raw predictions: {predictions}')
     
+    # Print the predicted probabilities for each class
+    for class_name, probability in zip(class_names, predictions[0]):
+        st.write(f'{class_name}: {probability:.4f}')
+    
     predicted_class = class_names[np.argmax(predictions)]
     
     # Display the prediction
     st.write(f'The model predicts this image is: **{predicted_class}**')
+    
+    # Debug: Display the predicted class index and corresponding probability
+    st.write(f'Predicted class index: {np.argmax(predictions)}')
+    st.write(f'Predicted class probability: {np.max(predictions)}')
+
 
