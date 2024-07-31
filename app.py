@@ -32,8 +32,6 @@ if uploaded_file is not None:
     img = tf.image.resize(img, [400, 400])
     img = tf.expand_dims(img, axis=0)  # Add batch dimension
     
-    # Normalize the image
-    img = img / 255.0
     
     # Make predictions
     predictions = model.predict(img)
