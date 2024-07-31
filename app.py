@@ -23,15 +23,20 @@ st.write('Upload an image of trash and the model will predict its category.')
 uploaded_file = st.file_uploader('Choose an image...', type=['jpg', 'jpeg', 'png'])
 
 if uploaded_file is not None:
+    # Read the uploaded file as bytes
+    file_bytes = uploaded_file.read()
+    
     # Load the image
     image = Image.open(uploaded_file)
     st.image(image, caption='Uploaded Image', use_column_width=True)
     
-    # Convert the image to a TensorFlow tensor
-    img = tf.io.decode_image(uploaded_file.read(), channels=3)
+    # Decode the image using TensorFlow
+    img = tf.io.decode_image(file_bytes, channels=3)
     img = tf.image.resize(img, [400, 400])
     img = tf.expand_dims(img, axis=0)  # Add batch dimension
     
+    # Normalize the image
+    img = img / 255.0
     
     # Make predictions
     predictions = model.predict(img)
