@@ -12,7 +12,7 @@ def load_trained_model():
 model = load_trained_model()
 
 # Define class names
-class_names = ['class1', 'class2', 'class3']  # Replace with your actual class names
+class_names = ['battery', 'biological', 'cardboard', 'clothes', 'glass', 'metal', 'paper', 'plastic', 'shoes', 'trash'] 
 
 # Define a function to preprocess the image
 def preprocess_image(image):
