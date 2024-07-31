@@ -38,11 +38,19 @@ if uploaded_file is not None:
     st.image(image, caption='Uploaded Image', use_column_width=True)
     
     # Preprocess the image
-    image = preprocess_image(image)
+    preprocessed_image = preprocess_image(image)
+    
+    # Debug: Display the shape of the preprocessed image
+    st.write(f'Preprocessed image shape: {preprocessed_image.shape}')
     
     # Make predictions
-    predictions = model.predict(image)
+    predictions = model.predict(preprocessed_image)
+    
+    # Debug: Print raw predictions
+    st.write(f'Raw predictions: {predictions}')
+    
     predicted_class = class_names[np.argmax(predictions)]
     
     # Display the prediction
     st.write(f'The model predicts this image is: **{predicted_class}**')
+
