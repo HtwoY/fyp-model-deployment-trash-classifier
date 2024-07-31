@@ -1,13 +1,14 @@
 import streamlit as st
 import numpy as np
+import tensorflow as tf
 from PIL import Image
 from tensorflow.keras.models import load_model
-import tensorflow as tf
+import matplotlib.pyplot as plt
 
 # Load the trained model
 @st.cache(allow_output_mutation=True)
 def load_trained_model():
-    model = load_model('resnet50_model.keras')
+    model = load_model('tuned_efficientnetb5_model.keras')
     return model
 
 model = load_trained_model()
@@ -26,10 +27,6 @@ if uploaded_file is not None:
     # Read the uploaded file as bytes
     file_bytes = uploaded_file.read()
     
-    # Load the image
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Uploaded Image', use_column_width=True)
-    
     # Decode the image using TensorFlow
     img = tf.io.decode_image(file_bytes, channels=3)
     img = tf.image.resize(img, [400, 400])
@@ -41,6 +38,9 @@ if uploaded_file is not None:
     # Make predictions
     predictions = model.predict(img)
     predicted_class = class_names[np.argmax(predictions)]
+    
+    # Display the uploaded image
+    st.image(Image.open(uploaded_file), caption='Uploaded Image', use_column_width=True)
     
     # Display the prediction
     st.write(f'The model predicts this image is: **{predicted_class}**')
