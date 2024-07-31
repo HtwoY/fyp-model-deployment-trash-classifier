@@ -1,7 +1,9 @@
 import streamlit as st
 import numpy as np
+import tensorflow as tf
 from PIL import Image
 from tensorflow.keras.models import load_model
+import matplotlib.pyplot as plt
 
 # Load the trained model
 @st.cache(allow_output_mutation=True)
@@ -12,7 +14,7 @@ def load_trained_model():
 model = load_trained_model()
 
 # Define class names
-class_names = ['class1', 'class2', 'class3']  # Replace with your actual class names
+class_names = ['battery', 'biological', 'cardboard', 'clothes', 'glass', 'metal', 'paper', 'plastic', 'shoes', 'trash'] 
 
 # Define a function to preprocess the image
 def preprocess_image(image):
@@ -38,11 +40,28 @@ if uploaded_file is not None:
     st.image(image, caption='Uploaded Image', use_column_width=True)
     
     # Preprocess the image
-    image = preprocess_image(image)
+    preprocessed_image = preprocess_image(image)
+    
+    # Debug: Display the shape of the preprocessed image
+    st.write(f'Preprocessed image shape: {preprocessed_image.shape}')
     
     # Make predictions
-    predictions = model.predict(image)
+    predictions = model.predict(preprocessed_image)
+    
+    # Debug: Print raw predictions
+    st.write(f'Raw predictions: {predictions}')
+    
+    # Print the predicted probabilities for each class
+    for class_name, probability in zip(class_names, predictions[0]):
+        st.write(f'{class_name}: {probability:.4f}')
+    
     predicted_class = class_names[np.argmax(predictions)]
     
     # Display the prediction
     st.write(f'The model predicts this image is: **{predicted_class}**')
+    
+    # Debug: Display the predicted class index and corresponding probability
+    st.write(f'Predicted class index: {np.argmax(predictions)}')
+    st.write(f'Predicted class probability: {np.max(predictions)}')
+
+
