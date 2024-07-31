@@ -1,31 +1,19 @@
 import streamlit as st
 import numpy as np
-import tensorflow as tf
 from PIL import Image
 from tensorflow.keras.models import load_model
-import matplotlib.pyplot as plt
+import tensorflow as tf
 
 # Load the trained model
 @st.cache(allow_output_mutation=True)
 def load_trained_model():
-    model = load_model('resnet50_model.keras')
+    model = load_model('tuned_efficientnetb5_model.keras')
     return model
 
 model = load_trained_model()
 
 # Define class names
 class_names = ['battery', 'biological', 'cardboard', 'clothes', 'glass', 'metal', 'paper', 'plastic', 'shoes', 'trash'] 
-
-# Define a function to preprocess the image
-def preprocess_image(image):
-    image = image.resize((400, 400))
-    image = np.array(image)
-    if len(image.shape) == 2:
-        image = np.stack([image] * 3, axis=-1)
-    elif image.shape[-1] == 1:
-        image = np.concatenate([image] * 3, axis=-1)
-    image = image / 255.0
-    return np.expand_dims(image, axis=0)
 
 # Define the Streamlit app
 st.title('Trash Classification App')
@@ -39,29 +27,22 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption='Uploaded Image', use_column_width=True)
     
-    # Preprocess the image
-    preprocessed_image = preprocess_image(image)
+    # Convert the image to a TensorFlow tensor
+    img = tf.io.decode_image(uploaded_file.read(), channels=3)
+    img = tf.image.resize(img, [400, 400])
+    img = tf.expand_dims(img, axis=0)  # Add batch dimension
     
-    # Debug: Display the shape of the preprocessed image
-    st.write(f'Preprocessed image shape: {preprocessed_image.shape}')
+    # Normalize the image
+    img = img / 255.0
     
     # Make predictions
-    predictions = model.predict(preprocessed_image)
-    
-    # Debug: Print raw predictions
-    st.write(f'Raw predictions: {predictions}')
-    
-    # Print the predicted probabilities for each class
-    for class_name, probability in zip(class_names, predictions[0]):
-        st.write(f'{class_name}: {probability:.4f}')
-    
+    predictions = model.predict(img)
     predicted_class = class_names[np.argmax(predictions)]
     
     # Display the prediction
     st.write(f'The model predicts this image is: **{predicted_class}**')
     
-    # Debug: Display the predicted class index and corresponding probability
-    st.write(f'Predicted class index: {np.argmax(predictions)}')
-    st.write(f'Predicted class probability: {np.max(predictions)}')
-
-
+    # Debug: Print raw predictions and probabilities for each class
+    st.write(f'Raw predictions: {predictions}')
+    for class_name, probability in zip(class_names, predictions[0]):
+        st.write(f'{class_name}: {probability:.4f}')
